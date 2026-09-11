@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horoscope App</title>
+    <link href="./css/main.css" rel="stylesheet" >
+    <script src="./js/main.js" type="module"></script>
+</head>
+<body>
+    <!-- Loader -->
+    <div id="loader">
+        <div class="loader-animater"></div>
+    </div>
+    
+
+    <!-- Wheel of Fortune -->
+    <div class="wheel-container">
+        <img class="pointer" src="assets/images/pointer.webp" alt="Pointer">
+        <img class="zodiac-wheel" src="assets/images/zodiac_wheel_white.webp" alt="Zodiac Wheel">
+    </div>
+
+    <!-- Slider Container -->
+    <div class="slider-container"> 
+
+        <!-- Year Slider -->
+        <div class="slider-row">
+            <p class="slider-label">Under Which Year's Sky<br>Were You Born?</p>
+            <div class="slider-shell">
+                 <div id="year-slider" class="slider-viewport"></div>  
+            </div>
+            <button id="confirm-year" type="button">Confirm</button>
+        </div>
+    </div>
+</body>
+</html>

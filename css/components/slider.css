@@ -1,0 +1,100 @@
+.slider-container {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 20px;
+}
+
+.slider-row {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-bottom: 20px;
+}
+
+.slider-label {
+    margin-top: 40px;
+    margin-bottom: 40px;
+    text-align: center;
+    color: var(--secondary-color);
+    font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+    font-size: 30px;
+    letter-spacing: 4px;
+    font-weight: bold;
+}
+
+.slider-shell {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    overflow: hidden;
+}
+
+.slider-viewport {
+    visibility: hidden;
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    height: 60px;
+    box-sizing: border-box;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap; 
+
+    scroll-snap-type: x-mandatory;
+    scroll-behavior: smooth;
+
+    /* Hide Scrollbar */
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For older browsers */
+}
+
+.slider-viewport.is-ready {
+    visibility: visible;
+}
+
+/* For newer browsers */
+.slider-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.slider-shell::before, 
+.slider-shell::after {
+    position: absolute;
+    content: "";
+    top: 0;
+    bottom: 0;
+    width: 160px;
+    z-index: 2;
+} 
+
+.slider-shell::before {
+    left: 0;
+    background: linear-gradient(to right, #1A0B2E, #1A0B2E00);
+}
+
+.slider-shell::after {
+    right: 0;
+    background: linear-gradient(to left, #1A0B2E, #1A0B2E00);
+}
+
+.slider-viewport p {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 20px 18px;
+    color: var(--text-placeholder-color);
+    font-size: 28px;
+    transform: scale(0.85);
+    opacity: 0.7;
+    transition: color 0.2s ease-out, transform 0.2s ease-out, opacity 0.2s ease-out;
+    scroll-snap-align: center;
+}
+
+.slider-viewport p.active {
+    color: var(--secondary-color);
+    font-size: 30px;
+    transform: scale(1.13);
+    opacity: 1;
+    font-weight: bold;
+}
