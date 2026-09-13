@@ -1,5 +1,14 @@
 class ZodiacModel {
-  constructor(name, startMonth, startDate, endMonth, endDate, img ,symbol, element) {
+  constructor(
+    name,
+    startMonth,
+    startDate,
+    endMonth,
+    endDate,
+    img,
+    symbol,
+    element,
+  ) {
     this.name = name;
     this.startMonth = startMonth;
     this.startDate = startDate;
@@ -11,6 +20,7 @@ class ZodiacModel {
   }
 }
 
+// Zodiac Signs in Calendar Order
 export const zodiacList = [
   new ZodiacModel("aries", 3, 21, 4, 19, "aries.png", "♈", "fire.png"),
   new ZodiacModel("taurus", 4, 20, 5, 20, "taurus.png", "♉", "earth.png"),
@@ -20,8 +30,42 @@ export const zodiacList = [
   new ZodiacModel("virgo", 8, 23, 9, 22, "virgo.png", "♍", "earth.png"),
   new ZodiacModel("libra", 9, 23, 10, 22, "libra.png", "♎", "air.png"),
   new ZodiacModel("scorpio", 10, 23, 11, 21, "scorpio.png", "♏", "water.png"),
-  new ZodiacModel("sagittarius", 11, 22, 12, 21, "sagittarius.png", "♐", "fire.png"),
-  new ZodiacModel("capricorn", 12, 22, 1, 19, "capricorn.png", "♑", "earth.png"),
+  new ZodiacModel(
+    "sagittarius",
+    11,
+    22,
+    12,
+    21,
+    "sagittarius.png",
+    "♐",
+    "fire.png",
+  ),
+  new ZodiacModel(
+    "capricorn",
+    12,
+    22,
+    1,
+    19,
+    "capricorn.png",
+    "♑",
+    "earth.png",
+  ),
   new ZodiacModel("aquarius", 1, 20, 2, 18, "aquarius.png", "♒", "air.png"),
-  new ZodiacModel("pisces", 2, 19, 3, 20, "pisces.png", "♓", "water.png")
+  new ZodiacModel("pisces", 2, 19, 3, 20, "pisces.png", "♓", "water.png"),
+];
+
+// Zodiac Signs in Wheel Order
+export const zodiacWheelItem = [
+  "pisces",
+  "aquarius",
+  "capricorn",
+  "sagittarius",
+  "scorpio",
+  "libra",
+  "virgo",
+  "leo",
+  "cancer",
+  "gemini",
+  "taurus",
+  "aries",
 ];

@@ -20,17 +20,36 @@
         <img class="zodiac-wheel" src="assets/images/zodiac_wheel_white.webp" alt="Zodiac Wheel">
     </div>
 
-    <!-- Slider Container -->
-    <div class="slider-container"> 
+   <!-- Slider Container -->
+    <div class="slider-container "> 
 
         <!-- Year Slider -->
-        <div class="slider-row">
+        <div id="step-1" class="slider-row animate-fade-up">
             <p class="slider-label">Under Which Year's Sky<br>Were You Born?</p>
             <div class="slider-shell">
                  <div id="year-slider" class="slider-viewport"></div>  
             </div>
             <button id="confirm-year" type="button">Confirm</button>
         </div>
+
+        <!-- Month Slider -->
+        <div id="step-2" class="slider-row display-none">
+            <p class="slider-label">In Which Month<br>the Stars Begin to Align?</p>
+            <div class="slider-shell">
+                 <div id="month-slider" class="slider-viewport"></div>  
+            </div>
+            <button id="confirm-month" type="button">Confirm</button>
+        </div>
+
+        <!-- Day Slider -->
+        <div id="step-3" class="slider-row display-none">
+            <p class="slider-label">On Which Day<br>the Alignment Become Complete?</p>
+            <div class="slider-shell">
+                 <div id="day-slider" class="slider-viewport"></div>  
+            </div>
+            <button id="confirm-day" type="button">Confirm</button>
+        </div>
     </div>
+
 </body>
 </html>

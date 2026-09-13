@@ -1,111 +1,154 @@
-// Variables
-let activeItem = null;
-let animationFrameId = null;
-let snapTimer = null;
+export function createSliderItems({
+  slider,
+  min,
+  max,
+  currentItem,
+  formatItem = String,
+}) {
+  // Variables
+  let activeItem = null;
+  let animationFrameId = null;
+  let snapTimer = null;
 
-export function getActiveItemValue() {
-  return activeItem ? Number(activeItem.textContent) : null;
-}
-
-export function createSliderItems({ slider, min, max, currentItem }) {
   // Create Slider Items
   for (let item = min; item <= max; item++) {
     const sliderItem = document.createElement("p");
-    sliderItem.textContent = item;
+
+    sliderItem.dataset.value = item;
+    sliderItem.textContent = formatItem(item);
+
     slider.appendChild(sliderItem);
   }
 
-  addEdgeSpace({ slider: slider }); // Add Edge Space
-  findCurrentItem({ slider: slider, currentItem: currentItem }); // Scroll to Current Year Item
-  animateSlider({ slider: slider }); // Animate Slider
+  addEdgeSpace();
+  setInitialItem();
+  addScrollListener();
   slider.classList.add("is-ready");
-}
 
-function addEdgeSpace({ slider }) {
-  const firstItem = slider.firstElementChild;
-  const lastItem = slider.lastElementChild;
+  return {
+    getValue() {
+      return activeItem ? Number(activeItem.dataset.value) : null;
+    },
 
-  if (!firstItem || !lastItem) {
-    return;
-  }
+    center() {
+      addEdgeSpace();
 
-  const leftSpace = (slider.clientWidth - firstItem.offsetWidth) / 2;
-  const rightSpace = (slider.clientWidth - lastItem.offsetWidth) / 2;
+      if (activeItem) {
+        centerItem({ item: activeItem });
+      }
+    },
 
-  slider.style.paddingLeft = `${leftSpace}px`;
-  slider.style.paddingRight = `${rightSpace}px`;
-}
+    animateActiveItem() {
+      if (!activeItem) {
+        return;
+      }
 
-function findCurrentItem({ slider, currentItem }) {
-  const currentItemElement = [...slider.children].find(
-    (item) => Number(item.textContent) === currentItem,
-  );
+      slider.classList.add("is-locked");
+      activeItem.classList.add("animate-scale-up");
 
-  if (currentItemElement) {
-    centerItem({ slider, item: currentItemElement });
-  }
+      activeItem.addEventListener(
+        "animationend",
+        () => {
+          activeItem.classList.remove("animate-scale-up");
+        },
+        { once: true },
+      );
+    },
 
-  updateActiveItem({ slider });
-}
+    unlockScroll() {
+      slider.classList.remove("is-locked");
+    },
+  };
 
-function animateSlider({ slider }) {
-  slider.addEventListener("scroll", () => {
-    if (animationFrameId === null) {
-      animationFrameId = requestAnimationFrame(() => {
-        updateActiveItem({ slider });
-        animationFrameId = null;
-      });
+  function addEdgeSpace() {
+    const firstItem = slider.firstElementChild;
+    const lastItem = slider.lastElementChild;
+
+    if (!firstItem || !lastItem) {
+      return;
     }
 
-    clearTimeout(snapTimer);
-    snapTimer = setTimeout(() => snapToClosestItem({ slider }), 100);
-  });
-}
+    const leftSpace = (slider.clientWidth - firstItem.offsetWidth) / 2;
+    const rightSpace = (slider.clientWidth - lastItem.offsetWidth) / 2;
 
-function updateActiveItem({ slider }) {
-  const closestItem = getClosestItem({ slider });
-
-  if (closestItem === activeItem) {
-    return;
+    slider.style.paddingLeft = `${leftSpace}px`;
+    slider.style.paddingRight = `${rightSpace}px`;
   }
 
-  activeItem?.classList.remove("active");
-  closestItem.classList.add("active");
-  activeItem = closestItem;
-}
+  function setInitialItem() {
+    activeItem = [...slider.children].find(
+      (item) => Number(item.dataset.value) === currentItem,
+    );
 
-function getClosestItem({ slider }) {
-  const viewportCenter = slider.scrollLeft + slider.clientWidth / 2;
-  const items = [...slider.children];
-
-  let closestItem = items[0];
-  let smallestDistance = Infinity;
-
-  items.forEach((item) => {
-    const itemCenter = item.offsetLeft + item.offsetWidth / 2;
-    const distance = Math.abs(viewportCenter - itemCenter);
-
-    if (distance < smallestDistance) {
-      smallestDistance = distance;
-      closestItem = item;
+    if (!activeItem) {
+      return;
     }
-  });
 
-  return closestItem;
-}
+    activeItem.classList.add("active");
+    centerItem({
+      item: activeItem,
+    });
+  }
 
-function snapToClosestItem({ slider }) {
-  const closestItem = getClosestItem({ slider });
+  function addScrollListener() {
+    slider.addEventListener("scroll", () => {
+      if (animationFrameId === null) {
+        animationFrameId = requestAnimationFrame(() => {
+          updateActiveItem();
+          animationFrameId = null;
+        });
+      }
 
-  centerItem({ slider, item: closestItem, smooth: true });
-}
+      clearTimeout(snapTimer);
+      snapTimer = setTimeout(() => snapToClosestItem(), 100);
+    });
+  }
 
-function centerItem({ slider, item, smooth = false }) {
-  const targetScrollLeft =
-    item.offsetLeft - (slider.clientWidth - item.offsetWidth) / 2;
+  function updateActiveItem() {
+    const closestItem = getClosestItem();
 
-  slider.scrollTo({
-    left: targetScrollLeft,
-    behavior: smooth ? "smooth" : "auto",
-  });
+    if (closestItem === activeItem) {
+      return;
+    }
+
+    activeItem?.classList.remove("active");
+    closestItem.classList.add("active");
+    activeItem = closestItem;
+  }
+
+  function snapToClosestItem() {
+    const closestItem = getClosestItem();
+
+    centerItem({ item: closestItem, smooth: true });
+  }
+
+  function getClosestItem() {
+    const viewportCenter = slider.scrollLeft + slider.clientWidth / 2;
+    const items = [...slider.children];
+
+    let closestItem = items[0];
+    let smallestDistance = Infinity;
+
+    items.forEach((item) => {
+      const itemCenter = item.offsetLeft + item.offsetWidth / 2;
+      const distance = Math.abs(viewportCenter - itemCenter);
+
+      if (distance < smallestDistance) {
+        smallestDistance = distance;
+        closestItem = item;
+      }
+    });
+
+    return closestItem;
+  }
+
+  function centerItem({ item, smooth = false }) {
+    const targetScrollLeft =
+      item.offsetLeft - (slider.clientWidth - item.offsetWidth) / 2;
+
+    slider.scrollTo({
+      left: targetScrollLeft,
+      behavior: smooth ? "smooth" : "auto",
+    });
+  }
 }
