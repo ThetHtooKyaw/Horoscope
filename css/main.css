@@ -12,13 +12,24 @@
     --text-placeholder-color: #9B9B9D;
 }
 
+*, *::after, *::before {
+    box-sizing: border-box;
+}
+
+
+html,
 body {
+    margin: 0;
+    width: 100%;
+    min-height: 100%;
+}
+
+ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100vw;
-    height: 100vh;
+    min-height: 100dvh;
     overflow-x: hidden;
     background-color: var(--primary-color);
     font-family: 'DM Sans', -apple-system, sans-serif;
@@ -26,4 +37,34 @@ body {
 
 h1, h2, h3 {
   font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+}
+
+@media (max-width: 600px){
+    .pointer {
+        width: 35px;
+        height: 35px;
+    }
+    .slider-label {
+        margin: 20px 0px;
+        font-size: 24px;
+        letter-spacing: 2px;
+    }
+
+    .slider-viewport p {
+        font-size: 24px;
+    }
+
+    .slider-viewport p.active {
+        font-size: 24px;
+    }
+
+    .slider-shell::before, 
+    .slider-shell::after { 
+        width: 80px;
+    }
+
+    button {
+        margin: 20px 0;
+        padding: 15px 30px;
+    }
 }
