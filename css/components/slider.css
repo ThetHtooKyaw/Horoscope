@@ -125,7 +125,7 @@
 }
 
 .slider-viewport p.unselectable {
-  color: var(--text-placeholder-color);
+  color: var(--unselectable-color);
 }
 
 @keyframes fadeUp {
