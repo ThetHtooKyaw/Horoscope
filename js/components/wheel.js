@@ -2,6 +2,7 @@ import { zodiacList, zodiacWheelItem } from "../../model/zodiac_model.js";
 
 // Variables
 let wheelRotation = 0;
+let lastRotation = 0;
 
 const zodiacWheel = document.querySelector(".zodiac-wheel");
 const degreesPerSign = 360 / 12;
@@ -34,8 +35,25 @@ export function spinToSign({ month, day }) {
   return animateWheelToRotation({ rotation: fullSpins + remainingRotation });
 }
 
+export function reverseWheel() {
+  if (lastRotation === 0) {
+    return Promise.resolve();
+  }
+
+  const reverseRotation = -lastRotation;
+
+  wheelRotation += reverseRotation;
+  zodiacWheel.style.transform = `rotate(${wheelRotation}deg)`;
+
+  return new Promise((resolve) => {
+    zodiacWheel.addEventListener("transitionend", resolve, { once: true });
+  });
+}
+
 function animateWheelToRotation({ rotation }) {
   wheelRotation += rotation;
+  lastRotation = wheelRotation;
+
   zodiacWheel.style.transform = `rotate(${wheelRotation}deg)`;
 
   return new Promise((resolve) => {

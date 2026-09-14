@@ -1,5 +1,10 @@
 import { initializeLoader } from "./components/loader.js";
-import { spinWheel, spinBetweenSigns, spinToSign } from "./components/wheel.js";
+import {
+  spinWheel,
+  spinBetweenSigns,
+  spinToSign,
+  reverseWheel,
+} from "./components/wheel.js";
 import { createSliderItems } from "./components/slider.js";
 import { changeStep } from "./components/steps.js";
 
@@ -35,13 +40,16 @@ const daySlider = document.getElementById("day-slider");
 
 const confirmYearButton = document.getElementById("confirm-year");
 const confirmMonthButton = document.getElementById("confirm-month");
+const cancelMonthButton = document.getElementById("cancel-month");
 const confirmDayButton = document.getElementById("confirm-day");
+const cancelDayButton = document.getElementById("cancel-day");
 
 const yearSliderController = createSliderItems({
   slider: yearSlider,
   min: currentYear - 40,
   max: currentYear + 3,
   currentItem: currentYear,
+  maxSelectableValue: currentYear,
 });
 
 const monthSliderController = createSliderItems({
@@ -57,7 +65,15 @@ let daySliderController = null;
 confirmYearButton.addEventListener("click", async () => {
   const selectedYear = yearSliderController.getValue();
 
+  if (selectedYear === currentYear) {
+    monthSliderController.setMaxSelectableValue(currentMonth);
+  } else {
+    monthSliderController.setMaxSelectableValue(12);
+  }
+
   confirmYearButton.disabled = true;
+
+  yearSliderController.lockScroll();
   yearSliderController.animateActiveItem();
   await spinWheel();
   yearSliderController.unlockScroll();
@@ -66,15 +82,16 @@ confirmYearButton.addEventListener("click", async () => {
   requestAnimationFrame(() => {
     monthSliderController.center();
   });
-
-  console.log("Selected year:", selectedYear);
 });
 
 confirmMonthButton.addEventListener("click", async () => {
-  const selectedMonth = monthSliderController.getValue();
   const selectedYear = yearSliderController.getValue();
+  const selectedMonth = monthSliderController.getValue();
 
   confirmMonthButton.disabled = true;
+  cancelMonthButton.disabled = true;
+
+  monthSliderController.lockScroll();
   monthSliderController.animateActiveItem();
   await spinBetweenSigns({ month: selectedMonth });
   monthSliderController.unlockScroll();
@@ -84,6 +101,11 @@ confirmMonthButton.addEventListener("click", async () => {
     month: selectedMonth,
   });
 
+  const maxSelectableDay =
+    selectedYear === currentYear && selectedMonth === currentMonth
+      ? currentDay
+      : daysInSelectedMonth;
+
   const startingDay = Math.min(currentDay, daysInSelectedMonth);
 
   daySliderController = createSliderItems({
@@ -91,15 +113,31 @@ confirmMonthButton.addEventListener("click", async () => {
     min: 1,
     max: daysInSelectedMonth,
     currentItem: startingDay,
+    maxSelectableValue: maxSelectableDay,
   });
 
   changeStep(1);
   requestAnimationFrame(() => {
     daySliderController.center();
   });
+});
 
-  console.log("Selected month:", selectedMonth);
-  console.log("Days in selected month:", daysInSelectedMonth);
+cancelMonthButton.addEventListener("click", async () => {
+  cancelMonthButton.disabled = true;
+  confirmMonthButton.disabled = true;
+
+  monthSliderController.lockScroll();
+  await reverseWheel();
+  monthSliderController.unlockScroll();
+
+  cancelMonthButton.disabled = false;
+  confirmMonthButton.disabled = false;
+  confirmYearButton.disabled = false;
+
+  changeStep(-1);
+  requestAnimationFrame(() => {
+    yearSliderController.center();
+  });
 });
 
 confirmDayButton.addEventListener("click", async () => {
@@ -107,11 +145,31 @@ confirmDayButton.addEventListener("click", async () => {
   const selectedDay = daySliderController.getValue();
 
   confirmDayButton.disabled = true;
+  cancelDayButton.disabled = true;
+
+  daySliderController.lockScroll();
   daySliderController.animateActiveItem();
   await spinToSign({ month: selectedMonth, day: selectedDay });
   daySliderController.unlockScroll();
 
   changeStep(1);
+});
 
-  console.log("Selected day:", selectedDay);
+cancelDayButton.addEventListener("click", async () => {
+  cancelDayButton.disabled = true;
+  confirmDayButton.disabled = true;
+
+  daySliderController.lockScroll();
+  await reverseWheel();
+  daySliderController.unlockScroll();
+
+  cancelDayButton.disabled = false;
+  confirmDayButton.disabled = false;
+  cancelMonthButton.disabled = false;
+  confirmMonthButton.disabled = false;
+
+  changeStep(-1);
+  requestAnimationFrame(() => {
+    monthSliderController.center();
+  });
 });

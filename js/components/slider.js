@@ -3,6 +3,7 @@ export function createSliderItems({
   min,
   max,
   currentItem,
+  maxSelectableValue = max,
   formatItem = String,
 }) {
   // Variables
@@ -22,10 +23,16 @@ export function createSliderItems({
 
   addEdgeSpace();
   setInitialItem();
+  updateUnselectableItems();
   addScrollListener();
   slider.classList.add("is-ready");
 
   return {
+    setMaxSelectableValue(value) {
+      maxSelectableValue = value;
+      updateUnselectableItems();
+    },
+
     getValue() {
       return activeItem ? Number(activeItem.dataset.value) : null;
     },
@@ -42,8 +49,6 @@ export function createSliderItems({
       if (!activeItem) {
         return;
       }
-
-      slider.classList.add("is-locked");
       activeItem.classList.add("animate-scale-up");
 
       activeItem.addEventListener(
@@ -53,6 +58,10 @@ export function createSliderItems({
         },
         { once: true },
       );
+    },
+
+    lockScroll() {
+      slider.classList.add("is-locked");
     },
 
     unlockScroll() {
@@ -90,6 +99,15 @@ export function createSliderItems({
     });
   }
 
+  function updateUnselectableItems() {
+    [...slider.children].forEach((item) => {
+      const value = Number(item.dataset.value);
+      const isUnselectable = value > maxSelectableValue;
+
+      item.classList.toggle("unselectable", isUnselectable);
+    });
+  }
+
   function addScrollListener() {
     slider.addEventListener("scroll", () => {
       if (animationFrameId === null) {
@@ -124,12 +142,14 @@ export function createSliderItems({
 
   function getClosestItem() {
     const viewportCenter = slider.scrollLeft + slider.clientWidth / 2;
-    const items = [...slider.children];
+    const selectableItems = [...slider.children].filter(
+      (item) => Number(item.dataset.value) <= maxSelectableValue,
+    );
 
-    let closestItem = items[0];
+    let closestItem = selectableItems[0];
     let smallestDistance = Infinity;
 
-    items.forEach((item) => {
+    selectableItems.forEach((item) => {
       const itemCenter = item.offsetLeft + item.offsetWidth / 2;
       const distance = Math.abs(viewportCenter - itemCenter);
 
